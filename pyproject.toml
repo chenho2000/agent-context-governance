@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-context-governance"
+version = "0.1.0"
+description = "Context Lab: an observable learning prototype for agent context governance"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ruff>=0.16.6",
+]
+
+[project.optional-dependencies]
+lingua = ["llmlingua>=0.2.2,<0.3"]
+embeddings = ["sentence-transformers>=3,<6"]
+classifiers = ["transformers>=4.45,<5", "torch>=2"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
+
+[project.scripts]
+context-lab = "context_lab.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/context_lab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/context_lab", "tests", "examples", "docs",
+    "README.md", "README.en.md", "pyproject.toml", "uv.lock",
+]

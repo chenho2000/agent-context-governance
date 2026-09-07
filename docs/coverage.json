@@ -1,0 +1,602 @@
+[
+  {
+    "id": "objects",
+    "article_pages": "2",
+    "method": "ContextObject + stable IDs",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/types.py:ContextObject",
+      "src/context_lab/store.py:append"
+    ],
+    "tests": [
+      "tests/test_governance.py:test_fold_restart_recovery_protocol_and_raw_immutable"
+    ],
+    "limitation": ""
+  },
+  {
+    "id": "mark",
+    "article_pages": "2",
+    "method": "Root and bridge dependency closure",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/projection.py:dependency_closure",
+      "src/context_lab/fusion.py:live_objects"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_fusion_model_edges_are_scoped"
+    ],
+    "limitation": "Explicit/learned edges may miss implicit semantic dependencies."
+  },
+  {
+    "id": "planner",
+    "article_pages": "2",
+    "method": "Six-step planner + priority + calibration",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/planning.py",
+      "src/context_lab/governance.py:plan"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_model_trigger_and_tiered_planner"
+    ],
+    "limitation": "Prompt implementation; not the original trained planner."
+  },
+  {
+    "id": "async",
+    "article_pages": "2",
+    "method": "Fork / rehearsal / pending / safe commit",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/runtime.py:start_gc",
+      "src/context_lab/runtime.py:poll_gc",
+      "src/context_lab/governance.py:rehearse",
+      "src/context_lab/runtime.py:resume_pending"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_nonblocking_start_poll_and_stale",
+      "tests/test_lifecycle_budget_memory.py:test_pending_retried_after_restart_without_replanning"
+    ],
+    "limitation": ""
+  },
+  {
+    "id": "actions",
+    "article_pages": "2,15",
+    "method": "User fold-only; tool fold/mask/prune",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/governance.py:rehearse"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_user_fold_only_and_media_instruction_write_guards"
+    ],
+    "limitation": ""
+  },
+  {
+    "id": "sidecar",
+    "article_pages": "2,15",
+    "method": "Exact text archive + recovery",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/store.py:persist_sidecar",
+      "src/context_lab/store.py:recover"
+    ],
+    "tests": [
+      "tests/test_governance.py:test_fold_restart_recovery_protocol_and_raw_immutable"
+    ],
+    "limitation": ""
+  },
+  {
+    "id": "mask",
+    "article_pages": "2,15",
+    "method": "Log masking preserves first/last 10% of lines",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/governance.py:mask_log"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_mask_preserves_tails_and_aged_error_stack"
+    ],
+    "limitation": "Line-based proportion is an explicit teaching choice."
+  },
+  {
+    "id": "media",
+    "article_pages": "2",
+    "method": "Media and sparse-evidence boundaries",
+    "status": "protected_boundary",
+    "implementation": [
+      "src/context_lab/projection.py:protected",
+      "src/context_lab/projection.py:sparse_evidence"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_user_fold_only_and_media_instruction_write_guards"
+    ],
+    "limitation": "Binary media transport/recovery is not implemented; media is protected from text folding."
+  },
+  {
+    "id": "commit",
+    "article_pages": "3,10–11,15",
+    "method": "Provider-priced suffix-aware commit",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/cache.py:commit_value",
+      "src/context_lab/governance.py:commit"
+    ],
+    "tests": [
+      "tests/test_adapters_cost_cli.py:test_cache_ttl_scope_prefix_and_cost"
+    ],
+    "limitation": "Teaching units and prices, not provider bills."
+  },
+  {
+    "id": "prism-n1",
+    "article_pages": "3",
+    "method": "Hierarchical typed-path retrieval",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/retrieval.py:Prism"
+    ],
+    "tests": [
+      "tests/test_retrieval_memory.py:test_prism_path_intent_budget_persistence"
+    ],
+    "limitation": "Small reference search, not official benchmark reproduction."
+  },
+  {
+    "id": "prism-n2",
+    "article_pages": "3",
+    "method": "Query-sensitive edge costs",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/retrieval.py:retrieve"
+    ],
+    "tests": [
+      "tests/test_retrieval_memory.py:test_prism_path_intent_budget_persistence"
+    ],
+    "limitation": "Explicit educational edge discount."
+  },
+  {
+    "id": "prism-n3",
+    "article_pages": "3; supplied PRISM v2",
+    "method": "Content-based evidence selection and budget",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/retrieval.py:retrieve",
+      "src/context_lab/evidence.py:pack_evidence"
+    ],
+    "tests": [
+      "tests/test_retrieval_memory.py:test_model_rerank_invalid_ids_rejected",
+      "tests/test_lifecycle_budget_memory.py:test_full_request_budget_skips_large_and_preserves_sources"
+    ],
+    "limitation": "BM25 fallback / optional model reranking; article omitted this module."
+  },
+  {
+    "id": "prism-n4",
+    "article_pages": "3; supplied PRISM v2",
+    "method": "Keyword / prototype / model intent routing",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/retrieval.py:route"
+    ],
+    "tests": [
+      "tests/test_retrieval_memory.py:test_prism_path_intent_budget_persistence"
+    ],
+    "limitation": ""
+  },
+  {
+    "id": "gating",
+    "article_pages": "4,8",
+    "method": "Window information gate",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/gating.py:information_gate",
+      "src/context_lab/memory.py:ingest"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_information_gate_conservative"
+    ],
+    "limitation": "Conservative rules/optional encoder, not numeric entropy or proven lossless filtering."
+  },
+  {
+    "id": "facts",
+    "article_pages": "4",
+    "method": "Atomic facts + coreference + temporal anchoring",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/memory.py:ingest"
+    ],
+    "tests": [
+      "tests/test_retrieval_memory.py:test_hallucinated_source_and_ambiguous_date"
+    ],
+    "limitation": "Offline annotations; model extraction optional; explicit reference bindings only."
+  },
+  {
+    "id": "three-view",
+    "article_pages": "4",
+    "method": "Vector + BM25 + symbolic retrieval",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/memory.py:retrieve",
+      "src/context_lab/retrieval.py:bm25"
+    ],
+    "tests": [
+      "tests/test_retrieval_memory.py:test_memory_date_synthesis_correction_and_scope"
+    ],
+    "limitation": "Hash vector default; real embeddings optional."
+  },
+  {
+    "id": "synthesis",
+    "article_pages": "4",
+    "method": "Online synthesis / provenance merge",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/memory.py:ingest",
+      "src/context_lab/store.py:put_memory",
+      "src/context_lab/store.py:put_memories"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_atomic_memory_source_merge",
+      "tests/test_lifecycle_budget_memory.py:test_window_validation_is_atomic_and_cycle_rolls_back"
+    ],
+    "limitation": "Field-key equivalence, not autonomous semantic equivalence proof."
+  },
+  {
+    "id": "memory-planner",
+    "article_pages": "supplied SimpleMem v3",
+    "method": "Intent-aware query planning",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/memory.py:retrieve"
+    ],
+    "tests": [
+      "tests/test_retrieval_memory.py:test_memory_date_synthesis_correction_and_scope"
+    ],
+    "limitation": "Rule single-query default; optional model expansion."
+  },
+  {
+    "id": "memgpt",
+    "article_pages": "4–5",
+    "method": "Core / Recall / Archival / heartbeat",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/memgpt.py:MemoryAgent"
+    ],
+    "tests": [
+      "tests/test_retrieval_memory.py:test_memgpt_paging_heartbeat_and_caps"
+    ],
+    "limitation": "Local bounded loop, not a full hosted agent."
+  },
+  {
+    "id": "self-edit",
+    "article_pages": "5",
+    "method": "Model-directed memory and explicit cross-session archive",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/memgpt.py:tool"
+    ],
+    "tests": [
+      "tests/test_retrieval_memory.py:test_model_directed_archive_and_explicit_cross_session"
+    ],
+    "limitation": ""
+  },
+  {
+    "id": "sleep",
+    "article_pages": "5",
+    "method": "Background sleep-time memory",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/memgpt.py:SleepWorker"
+    ],
+    "tests": [
+      "tests/test_retrieval_memory.py:test_memory_date_synthesis_correction_and_scope"
+    ],
+    "limitation": "Separate extension, not attributed to SimpleMem v3."
+  },
+  {
+    "id": "lingua1",
+    "article_pages": "5",
+    "method": "LLMLingua",
+    "status": "optional_adapter",
+    "implementation": [
+      "src/context_lab/providers.py:Lingua"
+    ],
+    "tests": [
+      "tests/test_adapters_cost_cli.py:test_lingua_adapter_contract_no_weights"
+    ],
+    "limitation": "Real package adapter; weights/inference not run in default tests."
+  },
+  {
+    "id": "longlingua",
+    "article_pages": "5",
+    "method": "LongLLMLingua",
+    "status": "optional_adapter",
+    "implementation": [
+      "src/context_lab/providers.py:Lingua"
+    ],
+    "tests": [
+      "tests/test_adapters_cost_cli.py:test_lingua_adapter_contract_no_weights"
+    ],
+    "limitation": "Real package adapter; weights/inference not run in default tests."
+  },
+  {
+    "id": "lingua2",
+    "article_pages": "5",
+    "method": "LLMLingua-2",
+    "status": "optional_adapter",
+    "implementation": [
+      "src/context_lab/providers.py:Lingua"
+    ],
+    "tests": [
+      "tests/test_adapters_cost_cli.py:test_lingua_adapter_contract_no_weights"
+    ],
+    "limitation": "Real package adapter; weights/inference not run in default tests."
+  },
+  {
+    "id": "zones",
+    "article_pages": "5,11",
+    "method": "Four zones + checkpoint TTL",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/projection.py:prompt_zones",
+      "src/context_lab/cache.py:ZonedCache"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_zoned_cache_expiry_dynamic_and_forecast"
+    ],
+    "limitation": "Exact checkpoint simulator; later cached prefixes include dynamic bytes too."
+  },
+  {
+    "id": "cache-safe",
+    "article_pages": "5,15",
+    "method": "Append-only compaction request transport",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/projection.py:compaction_request",
+      "src/context_lab/providers.py:generate_messages"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_zoned_cache_expiry_dynamic_and_forecast"
+    ],
+    "limitation": "Request prefix stability does not guarantee a provider cache hit or post-compaction cache retention."
+  },
+  {
+    "id": "filter",
+    "article_pages": "5,13–14",
+    "method": "Format filter / truncation / exact dedup",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/preprocess.py:preprocess",
+      "src/context_lab/preprocess.py:clean_terminal"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_terminal_clean_and_tracker_reuses_folded_source"
+    ],
+    "limitation": "Recoverable fold replaces destructive truncation; terminal cleanup is opt-in."
+  },
+  {
+    "id": "codemap",
+    "article_pages": "5–6",
+    "method": "Persistent code symbol map and search",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/codemap.py:CodeMap"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_symbol_search"
+    ],
+    "limitation": "Python-only index; no MCP server deployment."
+  },
+  {
+    "id": "cctx",
+    "article_pages": "6",
+    "method": "Local compression + structured JSON turn summary",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/compression.py:compress",
+      "src/context_lab/summaries.py:TurnSummaries"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_structured_summary_exact_spine_and_sources"
+    ],
+    "limitation": "Mechanism composition, not cctx host integration."
+  },
+  {
+    "id": "dcp",
+    "article_pages": "6",
+    "method": "Distill / compress / aged purgeErrors",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/governance.py:purge_error",
+      "src/context_lab/governance.py:rehearse"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_mask_preserves_tails_and_aged_error_stack"
+    ],
+    "limitation": "Local sending view, not an OpenCode plugin install."
+  },
+  {
+    "id": "fusion",
+    "article_pages": "7–8",
+    "method": "Episode contains ContextObject typed fusion",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/fusion.py:FusionGraph"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_fusion_edges_persistence_tuning_and_gc"
+    ],
+    "limitation": "Synthetic task hierarchy; application-specific graph construction still matters."
+  },
+  {
+    "id": "edge-cascade",
+    "article_pages": "7–8",
+    "method": "Rule → encoder → batched LLM edge building",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/fusion.py:build",
+      "src/context_lab/providers.py:EncoderClassifier"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_fusion_model_edges_are_scoped"
+    ],
+    "limitation": "Candidate pairs are adjacent objects; classifier/model cannot invent targets."
+  },
+  {
+    "id": "object-cascade",
+    "article_pages": "8–9",
+    "method": "Rule → encoder → local model → planner",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/planning.py:tiered_plan"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_tiered_local_and_llm_abstention"
+    ],
+    "limitation": "Encoder confidence is uncalibrated; never grants direct deletion authority."
+  },
+  {
+    "id": "encoder",
+    "article_pages": "7–9",
+    "method": "Optional NLI encoder classifier",
+    "status": "optional_adapter",
+    "implementation": [
+      "src/context_lab/providers.py:EncoderClassifier"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_encoder_adapter_contract"
+    ],
+    "limitation": "Generic NLI adapter, not a distilled Self-GC or LLMLingua-2 object classifier."
+  },
+  {
+    "id": "triggers",
+    "article_pages": "10,14–16",
+    "method": "System pressure + model compress_context trigger",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/runtime.py:compress_context",
+      "src/context_lab/runtime.py:start_gc",
+      "src/context_lab/memgpt.py:tool"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_model_trigger_and_tiered_planner"
+    ],
+    "limitation": ""
+  },
+  {
+    "id": "forecast",
+    "article_pages": "11",
+    "method": "Price/hit-probability adaptive planning value",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/cache.py:forecast_value"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_zoned_cache_expiry_dynamic_and_forecast"
+    ],
+    "limitation": "Probability and future reuse are caller assumptions, not automatically learned."
+  },
+  {
+    "id": "non-destructive",
+    "article_pages": "11",
+    "method": "Separate record / view / request",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/store.py:commit",
+      "src/context_lab/projection.py:messages"
+    ],
+    "tests": [
+      "tests/test_governance.py:test_fold_restart_recovery_protocol_and_raw_immutable"
+    ],
+    "limitation": ""
+  },
+  {
+    "id": "training",
+    "article_pages": "3,12",
+    "method": "Benchmark / golden trace / skill / SFT / DPO candidates",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/flywheel.py:clean_session",
+      "src/context_lab/flywheel.py:export"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_slow_clock_and_golden_trace"
+    ],
+    "limitation": "Candidate generation only; no RL trainer, model fine-tuning or auto-installed skill."
+  },
+  {
+    "id": "slow-clock",
+    "article_pages": "12",
+    "method": "Cross-session communities and patterns",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/summaries.py:consolidate_patterns"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_slow_clock_and_golden_trace"
+    ],
+    "limitation": "Symbolic connected components, not neural recursive abstraction or a causal explanation."
+  },
+  {
+    "id": "two-modes",
+    "article_pages": "12–13",
+    "method": "Availability-based mode switching",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/runtime.py:context_for"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_retrieve_first_keeps_dependency_and_mode_switch"
+    ],
+    "limitation": "Local storage remains required for exact recovery; operational outages only trigger fallback."
+  },
+  {
+    "id": "retrieval-tune",
+    "article_pages": "12",
+    "method": "Invalidate retrieval nodes / tune edge costs",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/fusion.py:tune"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_fusion_edges_persistence_tuning_and_gc"
+    ],
+    "limitation": "Explicit validated edits; no learned retrieval optimizer."
+  },
+  {
+    "id": "file-tracker",
+    "article_pages": "14",
+    "method": "Session-scoped path/version/range/hash tracker",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/preprocess.py:FileStateTracker"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_terminal_clean_and_tracker_reuses_folded_source"
+    ],
+    "limitation": ""
+  },
+  {
+    "id": "instruction-audit",
+    "article_pages": "15",
+    "method": "Instruction files / non-idempotent write audit",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/store.py:append",
+      "src/context_lab/projection.py:protected"
+    ],
+    "tests": [
+      "tests/test_revision.py:test_user_fold_only_and_media_instruction_write_guards"
+    ],
+    "limitation": "Known write tool names inferred; host must mark other side-effecting tools."
+  },
+  {
+    "id": "kv",
+    "article_pages": "companion explanation §2.7",
+    "method": "Causal attention / prefix cache illustration",
+    "status": "mechanism",
+    "implementation": [
+      "src/context_lab/kv.py:attention"
+    ],
+    "tests": [
+      "tests/test_adapters_cost_cli.py:test_cache_ttl_scope_prefix_and_cost"
+    ],
+    "limitation": "Scalar illustration, not a Transformer or KV implementation benchmark."
+  }
+]

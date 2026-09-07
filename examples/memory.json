@@ -1,0 +1,4 @@
+[
+  {"turn": 1, "kind": "user", "content": "Ada 昨天把支付方案从重试改为幂等键。", "metadata": {"date": "2026-09-06", "resolved": true, "facts": [{"entity": "Ada", "slot": "payment_plan", "value": "idempotency", "text": "Ada 在 2026-09-05 将支付方案改为幂等键。", "date": "yesterday"}]}},
+  {"turn": 2, "kind": "user", "content": "原因是测试发现重复扣款。", "metadata": {"date": "2026-09-06", "resolved": true, "facts": [{"entity": "Ada", "slot": "payment_reason", "value": "duplicate_charge", "text": "Ada 的支付方案变更原因：测试发现重试重复扣款。", "date": "2026-09-06"}]}}
+]
