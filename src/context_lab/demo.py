@@ -1,4 +1,4 @@
-"""可重复的端到端实验；所有数字由本次运行产生。"""
+"""Repeatable end-to-end experiment; all figures come from the current run."""
 
 from pathlib import Path
 import json
@@ -23,12 +23,16 @@ from .runtime import Runtime
 def graph_fixture():
     graph = Prism()
     for key, layer, text in [
-        ("ada", "entity", "Ada 支付负责人"),
-        ("payment", "facet_point", "Ada 支付方案 payment"),
-        ("retry", "facet", "支付重试的重复扣款风险"),
-        ("e1", "episode", "9月5日 Ada 将支付重试改为幂等键。"),
-        ("e2", "episode", "原因：测试表明没有幂等键时，支付重试导致重复扣款。"),
-        ("e3", "episode", "9月6日 Ada 讨论了数据库连接池大小。"),
+        ("ada", "entity", "Ada payment owner"),
+        ("payment", "facet_point", "Ada payment plan"),
+        ("retry", "facet", "Risk of duplicate charges from payment retries"),
+        ("e1", "episode", "On September 5, Ada changed payment retries to use idempotency keys."),
+        (
+            "e2",
+            "episode",
+            "Reason: tests showed that payment retries without idempotency keys cause duplicate charges.",
+        ),
+        ("e3", "episode", "On September 6, Ada discussed the database connection pool size."),
     ]:
         graph.node(key, layer, text)
     graph.edge("ada", "payment", "belongs_to")
@@ -46,7 +50,11 @@ def run(parent="runs"):
     output = Path(tempfile.mkdtemp(prefix="demo-", dir=parent))
     store, session = Store(output / "state"), "payment"
     constraint = store.append(
-        session, "不要重复扣款；金额精确到分。", turn=1, kind="user", metadata={"constraint": True}
+        session,
+        "Never charge twice; amounts must be exact to the cent.",
+        turn=1,
+        kind="user",
+        metadata={"constraint": True},
     )
     code = "def charge(amount):\n    return gateway.charge(amount)\n" + "# legacy implementation\n" * 120
     first = store.append(
@@ -65,7 +73,11 @@ def run(parent="runs"):
     )
     log = store.append(session, "INFO retry\n" * 120, turn=2, tool="test", metadata={"redundant_log": True})
     obsolete = store.append(
-        session, "网络波动是唯一原因。已否定。", turn=2, tool="search", metadata={"obsolete": True}
+        session,
+        "Network instability is the only cause. Rejected.",
+        turn=2,
+        tool="search",
+        metadata={"obsolete": True},
     )
     sparse = store.append(
         session,
@@ -74,7 +86,13 @@ def run(parent="runs"):
         tool="test",
         metadata={"exact_now": True},
     )
-    store.append(session, "用幂等键修复，稍后查看旧代码。", turn=3, kind="user", dependencies=(first.id,))
+    store.append(
+        session,
+        "Fix this with idempotency keys and review the old code later.",
+        turn=3,
+        kind="user",
+        dependencies=(first.id,),
+    )
     raw = prompt(store.snapshot(session))
     pretrace = preprocess(store, session, limit=10000)
     before = prompt(store.snapshot(session))
@@ -110,7 +128,7 @@ def run(parent="runs"):
         except ValueError as error:
             failures[name] = str(error)
     stale = governor.fork(session).result()
-    store.append(session, "继续核对测试结果。", turn=4, kind="user")
+    store.append(session, "Continue checking the test results.", turn=4, kind="user")
     try:
         governor.stage(stale)
     except ValueError as error:
@@ -122,7 +140,7 @@ def run(parent="runs"):
     ]
     graph = graph_fixture()
     graph.save(store)
-    query = "为什么 Ada 改变支付方案？"
+    query = "Why did Ada change the payment plan?"
     retrieval = {
         label: graph.retrieve(query, budget=80, **flags)
         for label, flags in [
@@ -141,14 +159,14 @@ def run(parent="runs"):
                 "slot": "plan",
                 "value": "idempotency",
                 "date": "yesterday",
-                "text": "Ada 在 2026-09-05 将支付方案改为幂等键。",
+                "text": "Ada changed the payment plan to use idempotency keys on 2026-09-05.",
             },
             {
                 "entity": "Ada",
                 "slot": "reason",
                 "value": "duplicate_charge",
                 "date": "2026-09-06",
-                "text": "Ada 的支付方案变更原因是测试发现重复扣款。",
+                "text": "Ada changed the payment plan because tests found duplicate charges.",
             },
         ]
     ):
@@ -170,11 +188,11 @@ def run(parent="runs"):
             [
                 {
                     "tool": "core_replace",
-                    "args": {"name": "task", "text": "核对支付方案"},
+                    "args": {"name": "task", "text": "Check the payment plan"},
                     "request_heartbeat": True,
                 },
                 {"tool": "archival_search", "args": {"query": query}, "request_heartbeat": True},
-                {"answer": "回放示例：为了避免重复扣款，Ada 采用幂等键。"},
+                {"answer": "Replay example: Ada adopted idempotency keys to avoid duplicate charges."},
             ]
         ),
         query,
@@ -190,7 +208,7 @@ def run(parent="runs"):
     cmap = CodeMap(store, sample)
     code_index = cmap.build()
     symbol = cmap.get_symbol("payment.py", "charge")
-    prefix = {"visible_ids": [constraint.id, first.id], "query": "修复支付"}
+    prefix = {"visible_ids": [constraint.id, first.id], "query": "Fix payment"}
     future = {"required_ids": [constraint.id, first.id]}
     trials = [
         evaluate_trial(prefix, "fold", future, [constraint.id], [first.id]),
@@ -237,51 +255,51 @@ def run(parent="runs"):
         ("04-recovered", recovered),
     ]:
         (output / (name + ".txt")).write_text(text, encoding="utf-8")
-    report = f"""# Context Lab 本次实验
+    report = f"""# Context Lab experiment
 
-本报告由离线合成案例生成。数字是教学词法单位，不是真实模型 token；未测量回答准确率或供应商账单。
+This report uses an offline synthetic case. Figures are teaching lexical units, not real model tokens; answer accuracy and provider bills were not measured.
 
-## 从这里看变化
+## Inspect the changes
 
-| 视图 | 长度 |
+| View | Length |
 |---|---:|
-| 原始投影 | {count(raw)} |
-| 预处理后 | {count(before)} |
-| 治理后 | {count(after)} |
+| Raw projection | {count(raw)} |
+| After preprocessing | {count(before)} |
+| After governance | {count(after)} |
 
-按顺序比较 `01-raw.txt`、`02-preprocessed.txt`、`03-governed.txt`，在 `04-recovered.txt` 查看旧版本完整代码。所有原始对象仍在 `state/context.sqlite3`。
+Compare `01-raw.txt`, `02-preprocessed.txt`, and `03-governed.txt` in order. See `04-recovered.txt` for the complete original code. All original objects remain in `state/context.sqlite3`.
 
-## 治理与缓存
+## Governance and caching
 
-缓存有效时：`{canonical(deferred)}`。
+With a valid cache: `{canonical(deferred)}`.
 
-最终提交：`{canonical(committed)}`。缓存代价与上下文长度分开判断；具体命中量见 trace.json 的 cache_requests。
+Final commit: `{canonical(committed)}`. Cache cost and context length are evaluated separately; see cache_requests in trace.json for cache hit counts.
 
-## 约束与反例
+## Constraints and negative cases
 
-自动断言：`{canonical(assertions)}`。
+Automatic assertions: `{canonical(assertions)}`.
 
-拒绝原因：`{canonical(failures)}`。
+Rejection reasons: `{canonical(failures)}`.
 
-## 检索与记忆
+## Retrieval and memory
 
-PRISM 全模块返回：{", ".join(e["id"] for e in retrieval["all"]["evidence"])}。预算 80，实际 {retrieval["all"]["units"]}。查看 prism_ablations 比较 N1—N4 的移除结果、路径和候选集；小样本不证明任何模块普遍更好。
+PRISM with all modules returned: {", ".join(e["id"] for e in retrieval["all"]["evidence"])}. Budget: 80; actual usage: {retrieval["all"]["units"]}. Inspect prism_ablations to compare results, paths, and candidate sets with N1–N4 removed; this small sample does not establish that any module is universally better.
 
-SimpleMem 写入 {len(memory_ids)} 条带来源事实，三视图合并结果在 simplemem。这里输入事实有显式标注；可选模型分支才自动抽取自然语言。
+SimpleMem wrote {len(memory_ids)} facts with provenance. The combined results from three views are in simplemem. Input facts are explicitly annotated here; only the optional model branch extracts facts automatically from natural language.
 
-MemGPT 使用 ReplayModel 跑 core_replace → archival_search → 回答，明确是脚本回放。SleepWorker 后台再次摄取，去重后仍是 {len(store.memories("memory"))} 条。
+MemGPT uses ReplayModel to run core_replace → archival_search → answer as a scripted replay. SleepWorker ingests the facts again in the background; deduplication keeps the total at {len(store.memories("memory"))}.
 
-## 结构读取、训练候选与内部机制
+## Structural reads, training candidates, and internal mechanisms
 
-codemap 保存版本哈希和函数行号，symbol 返回精确函数。training_candidates 含 {flywheel["sft"]} 条 SFT、{flywheel["dpo"]} 条 DPO 合成候选，不是训练完成的模型。
+codemap stores version hashes and function line numbers; symbol returns the exact function. training_candidates contains {flywheel["sft"]} synthetic SFT candidates and {flywheel["dpo"]} synthetic DPO candidates, not a trained model.
 
-kv 字段展示追加保持前缀、编辑影响后续层的因果关系。retrieve_first 展示另一种模式的完整请求。
+The kv field demonstrates how appending preserves the prefix and editing affects later layers. retrieve_first shows a complete request in the alternative mode.
 
-## 继续实验
+## Continue experimenting
 
-在项目根目录运行 `uv run context-lab inspect --state {output / "state"} --session payment` 查看治理后的视图；运行 `uv run context-lab query --state {output / "state"} --session memory "为什么 Ada 改变支付方案？"` 重新检索持久化记忆。
+From the project root, run `uv run context-lab inspect --state {output / "state"} --session payment` to inspect the governed view. Run `uv run context-lab query --state {output / "state"} --session memory "Why did Ada change the payment plan?"` to query the persisted memory again.
 
-完整事件、参数、数据与消融输出见 [trace.json](trace.json)。真实 Ollama、Sentence Transformers、LLMLingua 推理未在此离线案例中运行。
+See [trace.json](trace.json) for all events, parameters, data, and ablation outputs. Real Ollama, Sentence Transformers, and LLMLingua inference was not run in this offline case.
 """
     (output / "report.md").write_text(report, encoding="utf-8")
     if not all(assertions.values()):

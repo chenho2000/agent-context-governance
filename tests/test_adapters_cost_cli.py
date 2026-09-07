@@ -126,6 +126,6 @@ def test_end_to_end_and_cli_restart(tmp_path, capsys):
     assert trace["commit"]["committed"]
     assert trace["flywheel"]["dpo"] == 1
     main(["inspect", "--state", str(output / "state"), "--session", "payment"])
-    assert "不要重复扣款" in capsys.readouterr().out
+    assert "Never charge twice" in capsys.readouterr().out
     main(["query", "--state", str(output / "state"), "--session", "memory", "Ada"])
     assert "memories" in capsys.readouterr().out

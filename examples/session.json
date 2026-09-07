@@ -1,8 +1,8 @@
 [
-  {"turn": 1, "kind": "user", "content": "修复支付重试。不要重复扣款，金额精确到分。", "metadata": {"constraint": true}},
-  {"turn": 1, "kind": "tool", "tool": "read_file", "content": "def charge(amount):\n    return gateway.charge(amount)\n", "arguments": {"path": "payment.py"}, "metadata": {"path": "payment.py", "version": "v1", "range": [1, 2], "label": "修改前支付代码"}},
+  {"turn": 1, "kind": "user", "content": "Fix payment retries. Never charge twice; amounts must be exact to the cent.", "metadata": {"constraint": true}},
+  {"turn": 1, "kind": "tool", "tool": "read_file", "content": "def charge(amount):\n    return gateway.charge(amount)\n", "arguments": {"path": "payment.py"}, "metadata": {"path": "payment.py", "version": "v1", "range": [1, 2], "label": "Payment code before the change"}},
   {"turn": 2, "kind": "tool", "tool": "read_file", "content": "def charge(amount):\n    return gateway.charge(amount)\n", "arguments": {"path": "payment.py"}, "metadata": {"path": "payment.py", "version": "v1", "range": [1, 2]}},
   {"turn": 2, "kind": "tool", "tool": "test", "content": "Traceback\n  File \"payment.py\", line 2\nDuplicateCharge: retry charged twice", "metadata": {"exact_now": true}},
-  {"turn": 2, "kind": "tool", "tool": "search", "content": "旧猜测：网络延迟导致重复扣款。已被测试否定。", "metadata": {"obsolete": true}},
-  {"turn": 3, "kind": "user", "content": "现在用幂等键修复，并保留错误栈以便核对。", "metadata": {"constraint": true}}
+  {"turn": 2, "kind": "tool", "tool": "search", "content": "Old hypothesis: network latency causes duplicate charges. Rejected by tests.", "metadata": {"obsolete": true}},
+  {"turn": 3, "kind": "user", "content": "Fix this now with idempotency keys and keep the stack trace for verification.", "metadata": {"constraint": true}}
 ]

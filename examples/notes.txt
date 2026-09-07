@@ -1,3 +1,3 @@
-Ada 在 9 月 5 日复查了支付重试方案。测试显示，网络请求超时并不意味着网关没有扣款。如果应用立即重复发送扣款请求，用户可能被扣款两次。
-团队决定对同一次支付操作使用稳定的幂等键。金额必须以整数分表示，不得把重复扣款当成可接受的重试成本。
-背景讨论包括连接池、日志格式和测试目录整理。这些讨论尚未改变支付逻辑。需要保留的结论是：重试应复用同一幂等键，并检查网关对该键的处理结果。
+Ada reviewed the payment retry plan on September 5. Tests showed that a network request timeout does not mean the gateway has not charged the customer. If the application immediately sends the charge request again, the customer may be charged twice.
+The team decided to use a stable idempotency key for each payment operation. Amounts must be represented as integer cents, and duplicate charges must never be accepted as a cost of retries.
+Background discussions covered connection pools, log formatting, and test directory organization. These discussions have not changed the payment logic. The key conclusion to retain is that retries must reuse the same idempotency key and check the gateway's result for that key.

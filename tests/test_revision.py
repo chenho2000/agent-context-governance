@@ -173,7 +173,7 @@ def test_fusion_model_edges_are_scoped(tmp_path):
 
 def test_structured_summary_exact_spine_and_sources(tmp_path):
     store = Store(tmp_path)
-    obj = store.append("s", "不得重复扣款", turn=1, kind="user", metadata={"constraint": True})
+    obj = store.append("s", "Never charge twice", turn=1, kind="user", metadata={"constraint": True})
     summaries = TurnSummaries(store)
     reply = {field: [] for field in summaries.fields}
     result = summaries.write("s", 1, ReplayModel([reply]))

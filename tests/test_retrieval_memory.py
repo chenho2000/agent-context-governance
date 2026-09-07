@@ -11,23 +11,23 @@ from context_lab.runtime import Runtime
 
 def test_prism_path_intent_budget_persistence(tmp_path):
     graph = graph_fixture()
-    result = graph.retrieve("为什么 Ada 改变支付方案", budget=80)
+    result = graph.retrieve("Why did Ada change the payment plan", budget=80)
     assert result["intent"] == "causal"
     assert result["units"] <= 80
     assert any(e["id"] == "e2" for e in result["evidence"])
     assert any(e["relation"] == "causal" and e["step"] == 0.4 for e in result["trace"])
-    assert not graph.retrieve("支付", budget=0)["evidence"]
+    assert not graph.retrieve("payment", budget=0)["evidence"]
     store = Store(tmp_path)
     graph.save(store)
-    assert Prism.load(Store(tmp_path)).retrieve("支付") == graph.retrieve("支付")
+    assert Prism.load(Store(tmp_path)).retrieve("payment") == graph.retrieve("payment")
     assert bm25("needle", ["needle hay", "hay hay"])[0] > bm25("needle", ["needle hay", "hay hay"])[1]
-    assert route("变化")[0] == "evolution"
+    assert route("changed")[0] == "evolution"
 
 
 def test_model_rerank_invalid_ids_rejected():
     graph = graph_fixture()
     with pytest.raises(ValueError, match="IDs"):
-        graph.retrieve("为什么", model=ReplayModel([{"ids": ["invented"]}]))
+        graph.retrieve("why", model=ReplayModel([{"ids": ["invented"]}]))
 
 
 def test_memory_date_synthesis_correction_and_scope(tmp_path):

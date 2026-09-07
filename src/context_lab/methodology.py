@@ -77,10 +77,10 @@ def run(parent="runs"):
         "cleaned": cleaned,
     }
     (output / "trace.json").write_text(json.dumps(trace, ensure_ascii=False, indent=2), encoding="utf-8")
-    report = f"""# Methodology lab / 方法论组合实验
+    report = f"""# Methodology lab
 
 This is a deterministic teaching run, not a paper benchmark or a live model evaluation.
-本次仅使用规则、真实存储和合成材料；没有神经模型调用。
+This run uses only rules, real storage, and synthetic material; no neural models were called.
 
 | Step | Mechanism | Where to inspect in trace.json |
 |---|---|---|
@@ -94,13 +94,13 @@ This is a deterministic teaching run, not a paper benchmark or a live model eval
 | 8 | External-store outage → in-place fallback | fallback |
 | 9 | Cross-session patterns + clean trace | patterns / cleaned |
 
-提交结果：`{committed}`。
+Commit result: `{committed}`.
 
-可检索模式：`{retrieved["mode"]}`；断开外部检索后的模式：`{fallback["mode"]}`。
+Mode with retrieval available: `{retrieved["mode"]}`; mode with external retrieval disconnected: `{fallback["mode"]}`.
 
-精确约束有 {len(summary["exact_constraints"])} 条。慢循环找到 {len(patterns["patterns"])} 个有两个独立会话支持的符号模式；这不证明因果。
+There are {len(summary["exact_constraints"])} exact constraints. The slow loop found {len(patterns["patterns"])} symbolic patterns supported by two independent sessions; this does not establish causality.
 
-[完整运行轨迹](trace.json) · [原理到实现指南](../../docs/原理到实现.md)
+[Full execution trace](trace.json) · [Implementation guide](../../README.md)
 """
     (output / "report.md").write_text(report, encoding="utf-8")
     return output
